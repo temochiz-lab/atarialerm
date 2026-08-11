@@ -1,0 +1,2 @@
+# atarialerm
+アタリ判定
