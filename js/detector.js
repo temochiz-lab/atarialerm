@@ -6,7 +6,7 @@ export class BiteDetector {
   }
 
   score(metrics, trackingHealth, state) {
-    if (state !== "TRACKING" || trackingHealth.lost > 0 || trackingHealth.total < 3) {
+    if (state !== "TRACKING" || trackingHealth.lost > 0 || trackingHealth.total < CONFIG.guideCount) {
       return { score: 0, candidate: false };
     }
 

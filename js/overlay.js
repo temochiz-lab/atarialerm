@@ -40,7 +40,7 @@ export function drawOverlay(canvas, guides, options = {}) {
 
     if (CONFIG.overlay.labels) {
       ctx.font = "700 18px system-ui, sans-serif";
-      ctx.fillText(guide.status === "lost" ? `${guide.id} LOST` : guide.id, guide.x + 10, guide.y - 10);
+      ctx.fillText(guide.status === "lost" ? `${guide.id} ロスト` : guide.id, guide.x + 10, guide.y - 10);
     }
   }
 }

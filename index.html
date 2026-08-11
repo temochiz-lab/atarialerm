@@ -14,43 +14,43 @@
         <div class="stage" id="stage">
           <video id="videoInput" playsinline autoplay muted></video>
           <canvas id="overlay"></canvas>
-          <div class="bite-flash" id="biteFlash">BITE CANDIDATE</div>
+          <div class="bite-flash" id="biteFlash">アタリ候補</div>
         </div>
       </section>
 
       <section class="control-panel">
         <div class="status-grid">
           <div>
-            <span class="label">State</span>
-            <strong id="stateText">IDLE</strong>
+            <span class="label">状態</span>
+            <strong id="stateText">待機中</strong>
           </div>
           <div>
-            <span class="label">Tracking</span>
+            <span class="label">追跡</span>
             <strong id="trackingText">0/0</strong>
           </div>
           <div>
-            <span class="label">Score</span>
+            <span class="label">スコア</span>
             <strong id="scoreText">0.00</strong>
           </div>
           <div>
             <span class="label">OpenCV</span>
-            <strong id="opencvText">loading</strong>
+            <strong id="opencvText">読込中</strong>
           </div>
         </div>
 
         <canvas class="signal" id="signalCanvas" width="640" height="96"></canvas>
 
         <div class="controls">
-          <button id="cameraButton">CAMERA START</button>
-          <button id="registerButton" disabled>REGISTER GUIDES</button>
-          <button id="undoButton" disabled>UNDO LAST</button>
-          <button id="clearButton" disabled>CLEAR</button>
-          <button id="doneButton" disabled>DONE</button>
-          <button id="trackingButton" disabled>START TRACKING</button>
-          <button id="markButton" disabled>MARK HIT</button>
-          <button id="resetButton" disabled>RESET</button>
-          <button id="exportCsvButton" disabled>CSV</button>
-          <button id="exportJsonButton" disabled>JSON</button>
+          <button id="cameraButton">カメラ開始</button>
+          <button id="registerButton" disabled>3点登録</button>
+          <button id="undoButton" disabled>1つ戻す</button>
+          <button id="clearButton" disabled>全消去</button>
+          <button id="doneButton" disabled>登録完了</button>
+          <button id="trackingButton" disabled>追跡開始</button>
+          <button id="markButton" disabled>アタリ記録</button>
+          <button id="resetButton" disabled>リセット</button>
+          <button id="exportCsvButton" disabled>CSV保存</button>
+          <button id="exportJsonButton" disabled>JSON保存</button>
         </div>
 
         <label class="slider-row">
@@ -60,7 +60,7 @@
         </label>
 
         <p class="note" id="messageText">
-          CAMERA START後、REGISTER GUIDESで元側から穂先側へ3点以上タップしてください。
+          カメラ開始後、3点登録でロッドの元側・中間・穂先側を順番にタップしてください。
         </p>
       </section>
     </main>

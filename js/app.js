@@ -57,16 +57,16 @@ let signalValues = [];
 let lastGuides = [];
 
 loadOpenCv((status) => {
-  ui.opencvText.textContent = status;
+  ui.opencvText.textContent = translateOpenCvStatus(status);
 })
   .then((cv) => {
     cvRuntime = cv;
-    ui.opencvText.textContent = "ready";
+    ui.opencvText.textContent = "準備完了";
     render();
   })
   .catch((error) => {
-    ui.opencvText.textContent = "failed";
-    setMessage(error.message);
+    ui.opencvText.textContent = "失敗";
+    setMessage(`OpenCV.jsを読み込めませんでした: ${error.message}`);
   });
 
 ui.cameraButton.addEventListener("click", async () => {
@@ -75,7 +75,7 @@ ui.cameraButton.addEventListener("click", async () => {
     await startCamera(ui.video);
     syncCanvasToVideo(ui.video, ui.overlay);
     state = State.CAMERA_READY;
-    setMessage("REGISTER GUIDESでガイドを元側から順番にタップしてください。");
+    setMessage("3点登録で、元側・中間・穂先側の順にタップしてください。");
     render();
   } catch (error) {
     setMessage(`カメラを開始できません: ${error.message}`);
@@ -88,7 +88,7 @@ ui.registerButton.addEventListener("click", () => {
   lastGuides = [];
   metrics.reset();
   state = State.REGISTERING;
-  setMessage("G1を元側として、穂先側へ順番にタップしてください。3点以上でDONEできます。");
+  setMessage(`G1=元側、G2=中間、G3=穂先側として${CONFIG.guideCount}点だけタップしてください。`);
   render();
 });
 
@@ -103,13 +103,13 @@ ui.clearButton.addEventListener("click", () => {
 });
 
 ui.doneButton.addEventListener("click", () => {
-  if (registry.guides.length < 3) {
-    setMessage("最低3点のガイド登録が必要です。");
+  if (registry.guides.length !== CONFIG.guideCount) {
+    setMessage(`${CONFIG.guideCount}点ちょうど登録してください。`);
     return;
   }
   state = State.READY_TO_TRACK;
   lastGuides = registry.snapshot();
-  setMessage("START TRACKINGで追跡を開始します。");
+  setMessage("追跡開始で計測を始めます。");
   render();
 });
 
@@ -126,7 +126,7 @@ ui.trackingButton.addEventListener("click", () => {
 
 ui.markButton.addEventListener("click", () => {
   logger.markHit("hit");
-  setMessage("MARK HITを記録しました。");
+  setMessage("アタリ記録を保存しました。");
 });
 
 ui.resetButton.addEventListener("click", () => {
@@ -155,10 +155,19 @@ ui.sensitivityInput.addEventListener("input", () => {
 
 ui.overlay.addEventListener("pointerdown", (event) => {
   if (state !== State.REGISTERING || !ui.video.videoWidth) return;
+  if (registry.guides.length >= CONFIG.guideCount) {
+    setMessage(`${CONFIG.guideCount}点登録済みです。修正する場合は1つ戻すか全消去してください。`);
+    return;
+  }
   const point = eventToVideoPoint(event, ui.video);
   if (!point) return;
   registry.add(point);
-  setMessage(`${registry.guides.length}点登録済み。誤タップはUNDO LASTで戻せます。`);
+  if (registry.guides.length === CONFIG.guideCount) {
+    lastGuides = registry.snapshot();
+    setMessage(`${CONFIG.guideCount}点登録しました。問題なければ登録完了を押してください。`);
+  } else {
+    setMessage(`${registry.guides.length}/${CONFIG.guideCount}点登録済み。誤タップは1つ戻すで修正できます。`);
+  }
   render();
 });
 
@@ -175,8 +184,8 @@ function startTracking() {
     setMessage("OpenCV.jsのロード完了を待っています。");
     return;
   }
-  if (registry.guides.length < 3) {
-    setMessage("追跡には最低3点のガイド登録が必要です。");
+  if (registry.guides.length !== CONFIG.guideCount) {
+    setMessage(`追跡には${CONFIG.guideCount}点ちょうどの登録が必要です。`);
     return;
   }
   syncCanvasToVideo(ui.video, ui.overlay);
@@ -184,7 +193,7 @@ function startTracking() {
   lastGuides = tracker.start(registry.snapshot());
   metrics.reset();
   state = State.TRACKING;
-  setMessage("追跡中です。アタリならMARK HITを押してください。");
+  setMessage("追跡中です。アタリだと思ったらアタリ記録を押してください。");
 }
 
 function stopTracking() {
@@ -239,7 +248,7 @@ function loop(now) {
 }
 
 function render() {
-  ui.stateText.textContent = state;
+  ui.stateText.textContent = stateLabel(state);
   ui.sensitivityText.textContent = String(CONFIG.sensitivity);
   ui.sensitivityInput.value = String(CONFIG.sensitivity);
   const guides = registry.snapshot().length ? registry.snapshot() : lastGuides;
@@ -258,9 +267,9 @@ function updateButtons() {
   ui.registerButton.disabled = !cameraReady || state === State.TRACKING;
   ui.undoButton.disabled = !registering || registry.guides.length === 0;
   ui.clearButton.disabled = !registering || registry.guides.length === 0;
-  ui.doneButton.disabled = !registering || registry.guides.length < 3;
+  ui.doneButton.disabled = !registering || registry.guides.length !== CONFIG.guideCount;
   ui.trackingButton.disabled = !canTrack || !cvRuntime;
-  ui.trackingButton.textContent = state === State.TRACKING ? "STOP" : "START TRACKING";
+  ui.trackingButton.textContent = state === State.TRACKING ? "停止" : "追跡開始";
   ui.markButton.disabled = state !== State.TRACKING;
   ui.resetButton.disabled = state === State.IDLE && registry.guides.length === 0;
   ui.exportCsvButton.disabled = logger.frames.length === 0;
@@ -269,6 +278,24 @@ function updateButtons() {
 
 function setMessage(message) {
   ui.messageText.textContent = message;
+}
+
+function stateLabel(value) {
+  return {
+    [State.IDLE]: "待機中",
+    [State.CAMERA_READY]: "カメラ準備完了",
+    [State.REGISTERING]: "3点登録中",
+    [State.READY_TO_TRACK]: "追跡準備完了",
+    [State.TRACKING]: "追跡中"
+  }[value] || value;
+}
+
+function translateOpenCvStatus(status) {
+  return {
+    "loading local": "読込中",
+    "loading cdn": "読込中",
+    ready: "準備完了"
+  }[status] || status;
 }
 
 function trackingHealth(guides) {

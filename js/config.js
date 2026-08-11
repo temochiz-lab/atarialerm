@@ -1,5 +1,6 @@
 export const CONFIG = {
   processingWidth: 640,
+  guideCount: 3,
   targetFPS: 18,
   roiSize: 54,
   maxFeaturesPerGuide: 28,
