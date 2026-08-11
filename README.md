@@ -1,24 +1,36 @@
 # atarialerm
 
-Smartphone camera based fishing rod bite detector prototype.
+スマホカメラ式の釣竿アタリ検知アプリの試作版です。
 
-This is a static HTML/CSS/JavaScript app for registering rod line guides by tap, tracking them with OpenCV.js, visualizing the rod curve, detecting bite candidates, and exporting measurement logs as CSV or JSON.
+HTML/CSS/JavaScriptだけで動く静的Webアプリです。スマホカメラで釣竿を映し、ラインガイドをタップ登録してOpenCV.jsで追跡します。ガイド列の曲がりを可視化し、アタリ候補を画面と音で通知し、計測ログをCSVまたはJSONで保存できます。
 
-## Run locally
+## ローカルでの起動
 
-Serve the folder over HTTP, then open the URL in a browser:
+フォルダーをHTTPで配信してから、ブラウザで開きます。
 
 ```powershell
 python -m http.server 8787 --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8787/index.html`.
+起動後、次のURLを開きます。
 
-Camera access requires a secure context on phones, so deploy to HTTPS, for example Vercel, for real smartphone testing.
+`http://127.0.0.1:8787/index.html`
 
-## Notes
+スマホでカメラを使うにはHTTPS配信が必要です。実機確認時はVercelなどへデプロイして開いてください。
 
-- Camera frames are processed on-device.
-- Video upload and server-side image processing are not used in v0.1.
-- Bite thresholds are intentionally user adjustable because real fishing data is still needed.
-- `vendor/opencv.js` currently pins the OpenCV.js CDN loader. Replace it with a bundled OpenCV.js build for offline-first use.
+## 使い方
+
+1. `CAMERA START`でカメラを開始します。
+2. `REGISTER GUIDES`を押します。
+3. 元側から穂先側へ、見えているラインガイドを順番に3点以上タップします。
+4. 誤タップは`UNDO LAST`、やり直しは`CLEAR`を使います。
+5. `DONE`後、`START TRACKING`で追跡を開始します。
+6. 実際にアタリだと思ったタイミングで`MARK HIT`を押します。
+7. `CSV`または`JSON`でログを書き出します。
+
+## 注意点
+
+- カメラ画像は端末内で処理します。
+- v0.1では動画アップロードやサーバー側画像処理は行いません。
+- アタリ判定のしきい値は実釣データで調整する前提のため、感度スライダーで変更できるようにしています。
+- `vendor/opencv.js`は現在、固定バージョンのOpenCV.js CDNを読み込む小さなローダーです。オフライン利用を強める場合は、ここを同梱版のOpenCV.jsに差し替えてください。
