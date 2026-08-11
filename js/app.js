@@ -42,7 +42,8 @@ const ui = {
   exportCsvButton: document.querySelector("#exportCsvButton"),
   exportJsonButton: document.querySelector("#exportJsonButton"),
   sensitivityInput: document.querySelector("#sensitivityInput"),
-  sensitivityText: document.querySelector("#sensitivityText")
+  sensitivityText: document.querySelector("#sensitivityText"),
+  buildText: document.querySelector("#buildText")
 };
 
 const registry = new GuideRegistry();
@@ -179,6 +180,7 @@ window.addEventListener("resize", () => {
 });
 
 requestAnimationFrame(loop);
+ui.buildText.textContent = `更新日時: ${CONFIG.buildAt}`;
 render();
 
 function startTracking() {

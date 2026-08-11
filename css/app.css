@@ -164,6 +164,12 @@ input[type="range"] {
   font-size: 14px;
 }
 
+.build-info {
+  margin: 8px 0 0;
+  color: #c7d8d0;
+  font-size: 12px;
+}
+
 @media (orientation: landscape) and (min-width: 760px) {
   .app-shell {
     grid-template-columns: minmax(0, 1fr) 360px;
