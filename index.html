@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#06100d" />
+    <title>アタリ検知アプリ</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./css/app.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="stage-panel">
+        <div class="stage" id="stage">
+          <video id="videoInput" playsinline autoplay muted></video>
+          <canvas id="overlay"></canvas>
+          <div class="bite-flash" id="biteFlash">BITE CANDIDATE</div>
+        </div>
+      </section>
+
+      <section class="control-panel">
+        <div class="status-grid">
+          <div>
+            <span class="label">State</span>
+            <strong id="stateText">IDLE</strong>
+          </div>
+          <div>
+            <span class="label">Tracking</span>
+            <strong id="trackingText">0/0</strong>
+          </div>
+          <div>
+            <span class="label">Score</span>
+            <strong id="scoreText">0.00</strong>
+          </div>
+          <div>
+            <span class="label">OpenCV</span>
+            <strong id="opencvText">loading</strong>
+          </div>
+        </div>
+
+        <canvas class="signal" id="signalCanvas" width="640" height="96"></canvas>
+
+        <div class="controls">
+          <button id="cameraButton">CAMERA START</button>
+          <button id="registerButton" disabled>REGISTER GUIDES</button>
+          <button id="undoButton" disabled>UNDO LAST</button>
+          <button id="clearButton" disabled>CLEAR</button>
+          <button id="doneButton" disabled>DONE</button>
+          <button id="trackingButton" disabled>START TRACKING</button>
+          <button id="markButton" disabled>MARK HIT</button>
+          <button id="resetButton" disabled>RESET</button>
+          <button id="exportCsvButton" disabled>CSV</button>
+          <button id="exportJsonButton" disabled>JSON</button>
+        </div>
+
+        <label class="slider-row">
+          <span>感度</span>
+          <input id="sensitivityInput" type="range" min="0" max="100" value="58" />
+          <output id="sensitivityText">58</output>
+        </label>
+
+        <p class="note" id="messageText">
+          CAMERA START後、REGISTER GUIDESで元側から穂先側へ3点以上タップしてください。
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
