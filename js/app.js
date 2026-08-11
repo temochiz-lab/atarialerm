@@ -2,8 +2,6 @@ import { CONFIG } from "./config.js";
 import { startCamera } from "./camera.js";
 import { syncCanvasToVideo, eventToVideoPoint } from "./coords.js";
 import { GuideRegistry } from "./guide-register.js";
-import { loadOpenCv } from "./opencv-loader.js";
-import { GuideTracker } from "./tracker.js";
 import { TemplateTracker } from "./template-tracker.js";
 import { normalizeGuides } from "./normalize.js";
 import { Metrics } from "./metrics.js";
@@ -53,24 +51,12 @@ const logger = new Logger();
 const audio = new AlertAudio();
 
 let state = State.IDLE;
-let cvRuntime = null;
 let tracker = null;
-let trackingMode = "簡易";
+let trackingMode = "軽量";
 let signalValues = [];
 let lastGuides = [];
 
-loadOpenCv((status) => {
-  ui.opencvText.textContent = translateOpenCvStatus(status);
-})
-  .then((cv) => {
-    cvRuntime = cv;
-    ui.opencvText.textContent = "OpenCV";
-    render();
-  })
-  .catch((error) => {
-    ui.opencvText.textContent = "簡易";
-    console.warn("OpenCV.jsを読み込めませんでした。簡易追跡で続行します。", error);
-  });
+ui.opencvText.textContent = trackingMode;
 
 ui.cameraButton.addEventListener("click", async () => {
   try {
@@ -189,9 +175,9 @@ function startTracking() {
     return;
   }
   syncCanvasToVideo(ui.video, ui.overlay);
-  trackingMode = cvRuntime ? "OpenCV" : "簡易";
+  trackingMode = "軽量";
   ui.opencvText.textContent = trackingMode;
-  tracker = cvRuntime ? new GuideTracker(ui.video, cvRuntime) : new TemplateTracker(ui.video);
+  tracker = new TemplateTracker(ui.video);
   lastGuides = tracker.start(registry.snapshot());
   metrics.reset();
   state = State.TRACKING;
@@ -246,7 +232,11 @@ function loop(now) {
   }
 
   updateButtons();
-  requestAnimationFrame(loop);
+  if (state === State.TRACKING) {
+    requestAnimationFrame(loop);
+  } else {
+    setTimeout(() => requestAnimationFrame(loop), 250);
+  }
 }
 
 function render() {
@@ -290,14 +280,6 @@ function stateLabel(value) {
     [State.READY_TO_TRACK]: "追跡準備完了",
     [State.TRACKING]: "追跡中"
   }[value] || value;
-}
-
-function translateOpenCvStatus(status) {
-  return {
-    "loading local": "簡易",
-    "loading cdn": "簡易",
-    ready: "準備完了"
-  }[status] || status;
 }
 
 function trackingHealth(guides) {

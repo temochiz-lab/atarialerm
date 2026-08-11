@@ -1,13 +1,13 @@
 export const CONFIG = {
-  buildAt: "2026-08-11 19:08 JST",
+  buildAt: "2026-08-11 19:16 JST",
   processingWidth: 640,
   guideCount: 3,
-  targetFPS: 18,
+  targetFPS: 8,
   roiSize: 54,
-  templateSize: 34,
-  templateSearchRadius: 58,
-  templateSearchStep: 3,
-  templateMinScore: 0.42,
+  templateSize: 24,
+  templateSearchRadius: 32,
+  templateSearchStep: 6,
+  templateMinScore: 0.36,
   maxFeaturesPerGuide: 28,
   minFeaturesPerGuide: 7,
   lkWinSize: 21,
@@ -25,11 +25,7 @@ export const CONFIG = {
     arrows: false,
     debug: false
   },
-  opencvSources: [
-    "https://cdn.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.js",
-    "https://docs.opencv.org/4.10.0/opencv.js",
-    "./vendor/opencv.js"
-  ]
+  opencvSources: []
 };
 
 export function scoreThreshold(sensitivity = CONFIG.sensitivity) {
