@@ -1,4 +1,4 @@
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config-202608111909.js";
 
 export class TemplateTracker {
   constructor(video) {
