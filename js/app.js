@@ -4,6 +4,7 @@ import { syncCanvasToVideo, eventToVideoPoint } from "./coords.js";
 import { GuideRegistry } from "./guide-register.js";
 import { loadOpenCv } from "./opencv-loader.js";
 import { GuideTracker } from "./tracker.js";
+import { TemplateTracker } from "./template-tracker.js";
 import { normalizeGuides } from "./normalize.js";
 import { Metrics } from "./metrics.js";
 import { BiteDetector } from "./detector.js";
@@ -53,6 +54,7 @@ const audio = new AlertAudio();
 let state = State.IDLE;
 let cvRuntime = null;
 let tracker = null;
+let trackingMode = "簡易";
 let signalValues = [];
 let lastGuides = [];
 
@@ -61,12 +63,12 @@ loadOpenCv((status) => {
 })
   .then((cv) => {
     cvRuntime = cv;
-    ui.opencvText.textContent = "準備完了";
+    ui.opencvText.textContent = "OpenCV";
     render();
   })
   .catch((error) => {
-    ui.opencvText.textContent = "失敗";
-    setMessage(`OpenCV.jsを読み込めませんでした: ${error.message}`);
+    ui.opencvText.textContent = "簡易追跡";
+    setMessage(`OpenCV.jsを読み込めませんでした。簡易追跡モードで使えます。詳細: ${error.message}`);
   });
 
 ui.cameraButton.addEventListener("click", async () => {
@@ -180,20 +182,18 @@ requestAnimationFrame(loop);
 render();
 
 function startTracking() {
-  if (!cvRuntime) {
-    setMessage("OpenCV.jsのロード完了を待っています。");
-    return;
-  }
   if (registry.guides.length !== CONFIG.guideCount) {
     setMessage(`追跡には${CONFIG.guideCount}点ちょうどの登録が必要です。`);
     return;
   }
   syncCanvasToVideo(ui.video, ui.overlay);
-  tracker = new GuideTracker(ui.video, cvRuntime);
+  trackingMode = cvRuntime ? "OpenCV" : "簡易";
+  ui.opencvText.textContent = trackingMode;
+  tracker = cvRuntime ? new GuideTracker(ui.video, cvRuntime) : new TemplateTracker(ui.video);
   lastGuides = tracker.start(registry.snapshot());
   metrics.reset();
   state = State.TRACKING;
-  setMessage("追跡中です。アタリだと思ったらアタリ記録を押してください。");
+  setMessage(`${trackingMode}追跡中です。アタリだと思ったらアタリ記録を押してください。`);
 }
 
 function stopTracking() {
@@ -268,7 +268,7 @@ function updateButtons() {
   ui.undoButton.disabled = !registering || registry.guides.length === 0;
   ui.clearButton.disabled = !registering || registry.guides.length === 0;
   ui.doneButton.disabled = !registering || registry.guides.length !== CONFIG.guideCount;
-  ui.trackingButton.disabled = !canTrack || !cvRuntime;
+  ui.trackingButton.disabled = !canTrack;
   ui.trackingButton.textContent = state === State.TRACKING ? "停止" : "追跡開始";
   ui.markButton.disabled = state !== State.TRACKING;
   ui.resetButton.disabled = state === State.IDLE && registry.guides.length === 0;

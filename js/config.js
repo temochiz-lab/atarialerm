@@ -3,6 +3,10 @@ export const CONFIG = {
   guideCount: 3,
   targetFPS: 18,
   roiSize: 54,
+  templateSize: 34,
+  templateSearchRadius: 58,
+  templateSearchStep: 3,
+  templateMinScore: 0.42,
   maxFeaturesPerGuide: 28,
   minFeaturesPerGuide: 7,
   lkWinSize: 21,
@@ -21,8 +25,9 @@ export const CONFIG = {
     debug: false
   },
   opencvSources: [
-    "./vendor/opencv.js",
-    "https://docs.opencv.org/4.10.0/opencv.js"
+    "https://cdn.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.js",
+    "https://docs.opencv.org/4.10.0/opencv.js",
+    "./vendor/opencv.js"
   ]
 };
 
