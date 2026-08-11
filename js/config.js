@@ -1,5 +1,5 @@
 export const CONFIG = {
-  buildAt: "2026-08-11 19:03 JST",
+  buildAt: "2026-08-11 19:08 JST",
   processingWidth: 640,
   guideCount: 3,
   targetFPS: 18,

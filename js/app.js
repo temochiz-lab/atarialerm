@@ -74,8 +74,8 @@ loadOpenCv((status) => {
 
 ui.cameraButton.addEventListener("click", async () => {
   try {
-    await audio.unlock();
     await startCamera(ui.video);
+    audio.unlock().catch(() => {});
     syncCanvasToVideo(ui.video, ui.overlay);
     state = State.CAMERA_READY;
     setMessage("3点登録で、元側・中間・穂先側の順にタップしてください。");
