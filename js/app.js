@@ -68,8 +68,8 @@ loadOpenCv((status) => {
     render();
   })
   .catch((error) => {
-    ui.opencvText.textContent = "簡易追跡";
-    setMessage(`OpenCV.jsを読み込めませんでした。簡易追跡モードで使えます。詳細: ${error.message}`);
+    ui.opencvText.textContent = "簡易";
+    console.warn("OpenCV.jsを読み込めませんでした。簡易追跡で続行します。", error);
   });
 
 ui.cameraButton.addEventListener("click", async () => {
@@ -294,8 +294,8 @@ function stateLabel(value) {
 
 function translateOpenCvStatus(status) {
   return {
-    "loading local": "読込中",
-    "loading cdn": "読込中",
+    "loading local": "簡易",
+    "loading cdn": "簡易",
     ready: "準備完了"
   }[status] || status;
 }
